@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Fitness Coach</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #111827, #1f2937, #065f46);
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 900px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+      backdrop-filter: blur(10px);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+      font-size: 36px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #d1d5db;
+      margin-bottom: 30px;
+    }
+
+    .chat-box {
+      background: rgba(0, 0, 0, 0.25);
+      padding: 20px;
+      border-radius: 15px;
+      margin-bottom: 25px;
+    }
+
+    .ai-message {
+      background: #10b981;
+      color: #052e16;
+      padding: 15px;
+      border-radius: 15px 15px 15px 0;
+      margin-bottom: 20px;
+      font-weight: bold;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      outline: none;
+    }
+
+    textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 25px;
+      padding: 15px;
+      border: none;
+      border-radius: 12px;
+      background: #22c55e;
+      color: #052e16;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #86efac;
+      transform: scale(1.02);
+    }
+
+    .result {
+      display: none;
+      margin-top: 30px;
+      background: #f9fafb;
+      color: #111827;
+      padding: 25px;
+      border-radius: 18px;
+    }
+
+    .result h2 {
+      color: #065f46;
+    }
+
+    .card {
+      background: #ecfdf5;
+      padding: 18px;
+      border-radius: 14px;
+      margin-top: 15px;
+      border-left: 6px solid #10b981;
+    }
+
+    .warning {
+      background: #fff7ed;
+      color: #7c2d12;
+      padding: 15px;
+      border-radius: 12px;
+      margin-top: 20px;
+      font-size: 14px;
+    }
+
+    ul {
+      line-height: 1.8;
+    }
+
+    @media (max-width: 700px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        font-size: 28px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>AI Fitness Coach</h1>
+    <p class="subtitle">Answer a few questions and get a starter workout, diet, and lifestyle plan.</p>
+
+    <div class="chat-box">
+      <div class="ai-message">
+        👋 Hi! I’m your AI fitness coach. Tell me about your body, goal, lifestyle, and food preferences.
+      </div>
+
+      <form id="fitnessForm">
+        <div class="grid">
+          <div>
+            <label for="name">Your Name</label>
+            <input type="text" id="name" placeholder="Example: Antony" required />
+          </div>
+
+          <div>
+            <label for="age">Age</label>
+            <input type="number" id="age" placeholder="Example: 30" required />
+          </div>
+        </div>
+
+        <div class="grid">
+          <div>
+            <label for="bodyType">Body Type</label>
+            <select id="bodyType" required>
+              <option value="">Select</option>
+              <option value="ectomorph">Ectomorph / Naturally Slim</option>
+              <option value="mesomorph">Mesomorph / Naturally Athletic</option>
+              <option value="endomorph">Endomorph / Gains Weight Easily</option>
+              <option value="skinnyfat">Skinny Fat / Slim but Soft</option>
+              <option value="lean">Lean / Slim</option>
+              <option value="average">Average</option>
+              <option value="muscular">Already Muscular</option>
+              <option value="overweight">Overweight</option>
+              <option value="obese">Obese / High Fat Loss Needed</option>
+              <option value="underweight">Underweight / Needs Healthy Weight Gain</option>
+              <option value="talllean">Tall and Lean</option>
+              <option value="shortstocky">Short and Stocky</option>
+              <option value="postpartum">Postpartum / Returning After Pregnancy</option>
+              <option value="senior">Senior / Older Adult</option>
+              <option value="teen">Teen / Still Growing</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="goal">Main Fitness Goal</label>
+            <select id="goal" required>
+              <option value="">Select</option>
+              <option value="fatloss">Lose Fat</option>
+              <option value="muscle">Build Muscle</option>
+              <option value="strength">Build Strength</option>
+              <option value="endurance">Improve Stamina</option>
+              <option value="general">General Fitness</option>
+              <option value="athletic">Athletic Performance</option>
+              <option value="flexibility">Flexibility / Mobility</option>
+              <option value="bodybuilding">Bodybuilding / Aesthetic Physique</option>
+              <option value="powerlifting">Powerlifting</option>
+              <option value="calisthenics">Calisthenics Skills</option>
+              <option value="hiit">HIIT / Conditioning</option>
+              <option value="rehab">Low Impact / Rehab Style</option>
+              <option value="combat">Combat Sports Fitness</option>
+              <option value="sports">Sports Training</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid">
+          <div>
+            <label for="activity">Current Lifestyle</label>
+            <select id="activity" required>
+              <option value="">Select</option>
+              <option value="sedentary">Mostly Sitting</option>
+              <option value="light">Lightly Active</option>
+              <option value="active">Active</option>
+              <option value="veryactive">Very Active</option>
+              <option value="student">Student Lifestyle</option>
+              <option value="office">Office Job</option>
+              <option value="shiftwork">Shift Work / Irregular Sleep</option>
+              <option value="parent">Busy Parent</option>
+              <option value="athlete">Athlete / Sports Lifestyle</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="days">Workout Days Per Week</label>
+            <select id="days" required>
+              <option value="">Select</option>
+              <option value="3">3 Days</option>
+              <option value="4">4 Days</option>
+              <option value="5">5 Days</option>
+              <option value="1">1 Day</option>
+              <option value="2">2 Days</option>
+              <option value="6">6 Days</option>
+              <option value="7">7 Days / Daily Movement</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid">
+          <div>
+            <label for="diet">Diet Preference</label>
+            <select id="diet" required>
+              <option value="">Select</option>
+              <option value="normal">No Preference</option>
+              <option value="vegetarian">Vegetarian</option>
+              <option value="vegan">Vegan</option>
+              <option value="highprotein">High Protein</option>
+              <option value="lowcarb">Low Carb</option>
+              <option value="mediterranean">Mediterranean Style</option>
+              <option value="balanced">Balanced Diet</option>
+              <option value="budget">Budget-Friendly</option>
+              <option value="indian">Indian-Style Meals</option>
+              <option value="southasian">South Asian Meals</option>
+              <option value="halal">Halal-Friendly</option>
+              <option value="glutenfree">Gluten-Free</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="cultureFood">Cultural / Food Preference</label>
+            <input type="text" id="cultureFood" placeholder="Example: Indian food, rice-based meals, halal, etc." />
+          </div>
+        </div>
+
+        <label for="equipment">Available Equipment</label>
+        <select id="equipment" required>
+          <option value="">Select</option>
+          <option value="none">No Equipment / Home Workout</option>
+          <option value="basic">Dumbbells / Resistance Bands</option>
+          <option value="gym">Full Gym</option>
+          <option value="barbell">Barbell / Power Rack</option>
+          <option value="cardio">Cardio Machines</option>
+          <option value="outdoor">Outdoor / Park</option>
+          <option value="pool">Swimming Pool</option>
+        </select>
+
+        <label for="notes">Any Injuries, Health Issues, or Extra Notes?</label>
+        <textarea id="notes" placeholder="Example: knee pain, back pain, beginner, busy schedule, etc."></textarea>
+
+        <button type="submit">Generate My Plan</button>
+      </form>
+    </div>
+
+    <div class="result" id="resultBox">
+      <h2 id="planTitle"></h2>
+
+      <div class="card">
+        <h3>🏋️ Workout Plan</h3>
+        <ul id="workoutPlan"></ul>
+      </div>
+
+      <div class="card">
+        <h3>🥗 Diet Plan</h3>
+        <ul id="dietPlan"></ul>
+      </div>
+
+      <div class="card">
+        <h3>🔥 Lifestyle Tips</h3>
+        <ul id="lifestylePlan"></ul>
+      </div>
+
+      <div class="warning">
+        Note: This is a basic starter plan, not medical advice. If you have injuries, medical conditions, or major weight-loss goals, speak with a doctor or certified trainer.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById("fitnessForm");
+    const resultBox = document.getElementById("resultBox");
+    const planTitle = document.getElementById("planTitle");
+    const workoutPlan = document.getElementById("workoutPlan");
+    const dietPlan = document.getElementById("dietPlan");
+    const lifestylePlan = document.getElementById("lifestylePlan");
+
+    form.addEventListener("submit", function(event) {
+      event.preventDefault();
+
+      const name = document.getElementById("name").value;
+      const age = document.getElementById("age").value;
+      const bodyType = document.getElementById("bodyType").value;
+      const goal = document.getElementById("goal").value;
+      const activity = document.getElementById("activity").value;
+      const days = document.getElementById("days").value;
+      const diet = document.getElementById("diet").value;
+      const cultureFood = document.getElementById("cultureFood").value;
+      const equipment = document.getElementById("equipment").value;
+      const notes = document.getElementById("notes").value;
+
+      planTitle.textContent = `Your Personalized Starter Plan, ${name}`;
+
+      workoutPlan.innerHTML = "";
+      dietPlan.innerHTML = "";
+      lifestylePlan.innerHTML = "";
+
+      let workouts = [];
+      let diets = [];
+      let lifestyle = [];
+
+      if (goal === "fatloss") {
+        workouts.push("Do strength training 3–4 days per week to protect muscle while losing fat.");
+        workouts.push("Add 20–30 minutes of cardio after workouts or on rest days.");
+        workouts.push("Focus on full-body moves: squats, push-ups, rows, lunges, planks.");
+        diets.push("Create a small calorie deficit by reducing sugary drinks, fried foods, and heavy snacks.");
+        diets.push("Eat protein in every meal to stay full.");
+      } else if (goal === "muscle") {
+        workouts.push("Train each muscle group at least 2 times per week.");
+        workouts.push("Use progressive overload: slowly increase weight, reps, or sets.");
+        workouts.push("Focus on compound exercises: bench press, rows, squats, deadlifts, shoulder press.");
+        diets.push("Eat slightly more calories than usual to support muscle growth.");
+        diets.push("Aim for high-protein meals throughout the day.");
+      } else if (goal === "strength") {
+        workouts.push("Use lower reps with heavier weight: 3–6 reps for main lifts.");
+        workouts.push("Focus on squats, deadlifts, bench press, overhead press, and rows.");
+        workouts.push("Rest 2–3 minutes between heavy sets.");
+        diets.push("Eat enough carbs and protein to fuel heavy training.");
+      } else if (goal === "endurance") {
+        workouts.push("Do cardio 3–5 days per week: walking, jogging, cycling, rowing, or swimming.");
+        workouts.push("Add one longer cardio session each week.");
+        workouts.push("Use light strength training 2–3 days weekly to support joints and posture.");
+        diets.push("Include healthy carbs like oats, rice, potatoes, fruits, and whole grains.");
+      } else {
+        workouts.push("Follow a balanced routine with strength training, cardio, and mobility.");
+        workouts.push("Start with simple full-body workouts and increase difficulty slowly.");
+        workouts.push("Keep your workouts consistent before making them complicated.");
+        diets.push("Build meals around protein, vegetables, fruits, and whole-food carbs.");
+      }
+
+      if (equipment === "none") {
+        workouts.push("Home workout: push-ups, squats, lunges, glute bridges, burpees, mountain climbers, planks.");
+      } else if (equipment === "basic") {
+        workouts.push("Use dumbbells or bands for rows, curls, shoulder press, goblet squats, and Romanian deadlifts.");
+      } else if (equipment === "gym") {
+        workouts.push("Use machines and free weights, but keep form clean before lifting heavy.");
+      }
+
+      workouts.push(`Recommended schedule: ${days} workout days per week.`);
+
+      if (bodyType === "lean") {
+        diets.push("Do not overdo cardio. Prioritize strength training and enough calories.");
+      } else if (bodyType === "overweight") {
+        diets.push("Start with manageable portions and daily walking. Avoid crash diets.");
+      } else if (bodyType === "muscular") {
+        diets.push("Maintain protein intake and adjust calories based on whether you want to cut or bulk.");
+      } else {
+        diets.push("Use a balanced approach: protein, vegetables, carbs, and healthy fats.");
+      }
+
+      if (diet === "vegetarian") {
+        diets.push("Good protein options: lentils, beans, tofu, paneer, Greek yogurt, eggs if allowed, and protein shakes.");
+      } else if (diet === "vegan") {
+        diets.push("Good protein options: tofu, tempeh, lentils, chickpeas, beans, soy milk, nuts, and vegan protein powder.");
+      } else if (diet === "highprotein") {
+        diets.push("Include chicken, fish, eggs, Greek yogurt, tofu, paneer, beans, or protein shakes.");
+      } else if (diet === "lowcarb") {
+        diets.push("Choose protein, vegetables, healthy fats, and controlled portions of carbs around workouts.");
+      } else {
+        diets.push("Follow the plate method: 1/2 vegetables, 1/4 protein, 1/4 carbs, plus healthy fats.");
+      }
+
+      if (cultureFood.trim() !== "") {
+        diets.push(`Keep your food preference in mind: ${cultureFood}. Build healthier versions instead of removing foods completely.`);
+      }
+
+      lifestyle.push("Sleep 7–9 hours when possible. Poor sleep affects hunger, recovery, and motivation.");
+      lifestyle.push("Drink enough water daily, especially before and after workouts.");
+      lifestyle.push("Walk more during the day if your lifestyle is mostly sitting.");
+      lifestyle.push("Track progress using photos, strength improvements, energy level, and how clothes fit — not only body weight.");
+
+      if (activity === "sedentary") {
+        lifestyle.push("Start with 6,000–8,000 steps per day before pushing intense workouts.");
+      } else if (activity === "veryactive") {
+        lifestyle.push("Because you are already active, recovery and nutrition become more important.");
+      }
+
+      if (notes.trim() !== "") {
+        lifestyle.push(`Important note you shared: ${notes}. Adjust exercises carefully around this.`);
+      }
+
+      workouts.forEach(item => {
+        const li = document.createElement("li");
+        li.textContent = item;
+        workoutPlan.appendChild(li);
+      });
+
+      diets.forEach(item => {
+        const li = document.createElement("li");
+        li.textContent = item;
+        dietPlan.appendChild(li);
+      });
+
+      lifestyle.forEach(item => {
+        const li = document.createElement("li");
+        li.textContent = item;
+        lifestylePlan.appendChild(li);
+      });
+
+      resultBox.style.display = "block";
+      resultBox.scrollIntoView({ behavior: "smooth" });
+    });
+  </script>
+</body>
+</html>
+
