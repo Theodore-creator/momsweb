@@ -1,11 +1,1125 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Page Title</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Fitness Coach Dashboard</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #020617, #111827, #064e3b);
+      color: white;
+      padding: 20px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 1150px;
+      margin: auto;
+    }
+
+    .hero {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .hero h1 {
+      font-size: 42px;
+      margin-bottom: 8px;
+    }
+
+    .hero p {
+      color: #d1d5db;
+      font-size: 17px;
+    }
+
+    .screen {
+      display: none;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    .panel {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 22px;
+      padding: 28px;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(12px);
+      margin-bottom: 24px;
+    }
+
+    .ai-message {
+      background: #10b981;
+      color: #052e16;
+      padding: 16px;
+      border-radius: 16px 16px 16px 0;
+      margin-bottom: 20px;
+      font-weight: bold;
+      line-height: 1.5;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      margin-bottom: 7px;
+      font-weight: bold;
+      color: #f9fafb;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 13px;
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      outline: none;
+      background: #f9fafb;
+      color: #111827;
+    }
+
+    textarea {
+      min-height: 85px;
+      resize: vertical;
+    }
+
+    button {
+      border: none;
+      border-radius: 14px;
+      padding: 14px 18px;
+      background: #22c55e;
+      color: #052e16;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    button:hover {
+      background: #86efac;
+      transform: translateY(-1px);
+    }
+
+    .full-btn {
+      width: 100%;
+      margin-top: 25px;
+      font-size: 18px;
+      padding: 16px;
+    }
+
+    .secondary-btn {
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    .danger-btn {
+      background: #fca5a5;
+      color: #7f1d1d;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .topbar h2 {
+      margin: 0;
+      font-size: 30px;
+    }
+
+    .topbar p {
+      margin: 5px 0 0;
+      color: #d1d5db;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 18px;
+      margin-bottom: 22px;
+    }
+
+    .stat-card, .content-card {
+      background: #f9fafb;
+      color: #111827;
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.18);
+    }
+
+    .stat-card h3, .content-card h3 {
+      margin-top: 0;
+      color: #065f46;
+    }
+
+    .stat-card .big {
+      font-size: 26px;
+      font-weight: bold;
+      color: #111827;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    ul {
+      line-height: 1.8;
+      padding-left: 22px;
+    }
+
+    .tag {
+      display: inline-block;
+      background: #d1fae5;
+      color: #065f46;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: bold;
+      margin: 4px 4px 0 0;
+    }
+
+    .progress-entry {
+      background: #ecfdf5;
+      border-left: 5px solid #10b981;
+      padding: 12px;
+      border-radius: 12px;
+      margin-bottom: 10px;
+    }
+
+    .checklist-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #ecfdf5;
+      color: #111827;
+      padding: 10px;
+      border-radius: 12px;
+      margin-bottom: 8px;
+      font-weight: normal;
+    }
+
+    .checklist-item input {
+      width: auto;
+    }
+
+    .mini-note {
+      color: #d1d5db;
+      font-size: 14px;
+      margin-top: 8px;
+    }
+
+    .warning-card {
+      background: #fff7ed;
+      color: #7c2d12;
+      border-radius: 18px;
+      padding: 20px;
+      line-height: 1.5;
+      margin-top: 20px;
+    }
+
+    @media (max-width: 1000px) {
+      .cards {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 800px) {
+      .cards, .dashboard-grid, .grid-3, .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero h1 {
+        font-size: 30px;
+      }
+
+      .actions button {
+        width: 100%;
+      }
+    }
+  </style>
 </head>
 <body>
-    
+  <div class="app">
+    <section id="setupScreen" class="screen active">
+      <div class="hero">
+        <h1>AI Fitness Coach</h1>
+        <p>Sign in, answer your fitness questions, and open your personal daily fitness dashboard.</p>
+      </div>
+
+      <div class="panel">
+        <div class="ai-message">
+          👋 I’m your AI fitness coach. First, sign in with email. Then choose your body type, goal, lifestyle, equipment, diet, and schedule. After that, your dashboard will open with daily plans and progress tracking.
+        </div>
+
+        <form id="setupForm">
+          <h2>1. Account Details</h2>
+          <div class="grid">
+            <div>
+              <label for="email">Email</label>
+              <input type="email" id="email" placeholder="example@email.com" required />
+            </div>
+            <div>
+              <label for="name">Name</label>
+              <input type="text" id="name" placeholder="Example: Antony" required />
+            </div>
+          </div>
+
+          <h2>2. Body Information</h2>
+          <div class="grid-3">
+            <div>
+              <label for="age">Age</label>
+              <input type="number" id="age" min="10" max="100" placeholder="Example: 30" />
+            </div>
+            <div>
+              <label for="height">Height</label>
+              <input type="text" id="height" placeholder="Example: 175 cm or 5'9" />
+            </div>
+            <div>
+              <label for="weight">Current Weight</label>
+              <input type="text" id="weight" placeholder="Example: 75 kg or 165 lb" />
+            </div>
+          </div>
+
+          <div class="grid">
+            <div>
+              <label for="gender">Training Category</label>
+              <select id="gender">
+                <option value="">Select</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other / Prefer not to say</option>
+              </select>
+            </div>
+            <div>
+              <label for="bodyType">Body Type</label>
+              <select id="bodyType">
+                <option value="">Select</option>
+                <option value="ectomorph">Ectomorph / Naturally Slim</option>
+                <option value="mesomorph">Mesomorph / Naturally Athletic</option>
+                <option value="endomorph">Endomorph / Gains Weight Easily</option>
+                <option value="skinnyfat">Skinny Fat / Slim but Soft</option>
+                <option value="lean">Lean / Slim</option>
+                <option value="average">Average</option>
+                <option value="muscular">Already Muscular</option>
+                <option value="overweight">Overweight</option>
+                <option value="obese">Obese / High Fat Loss Needed</option>
+                <option value="underweight">Underweight / Needs Healthy Weight Gain</option>
+                <option value="talllean">Tall and Lean</option>
+                <option value="shortstocky">Short and Stocky</option>
+                <option value="postpartum">Postpartum / Returning After Pregnancy</option>
+                <option value="senior">Senior / Older Adult</option>
+                <option value="teen">Teen / Still Growing</option>
+              </select>
+            </div>
+          </div>
+
+          <h2>3. Fitness Goal</h2>
+          <div class="grid">
+            <div>
+              <label for="goal">Main Goal</label>
+              <select id="goal">
+                <option value="">Select</option>
+                <option value="fatloss">Lose Fat</option>
+                <option value="muscle">Build Muscle</option>
+                <option value="strength">Build Strength</option>
+                <option value="endurance">Improve Stamina</option>
+                <option value="general">General Fitness</option>
+                <option value="athletic">Athletic Performance</option>
+                <option value="flexibility">Flexibility / Mobility</option>
+                <option value="bodybuilding">Bodybuilding / Aesthetic Physique</option>
+                <option value="powerlifting">Powerlifting</option>
+                <option value="calisthenics">Calisthenics Skills</option>
+                <option value="hiit">HIIT / Conditioning</option>
+                <option value="rehab">Low Impact / Rehab Style</option>
+                <option value="combat">Combat Sports Fitness</option>
+                <option value="sports">Sports Training</option>
+              </select>
+            </div>
+            <div>
+              <label for="experience">Experience Level</label>
+              <select id="experience">
+                <option value="">Select</option>
+                <option value="beginner">Beginner</option>
+                <option value="intermediate">Intermediate</option>
+                <option value="advanced">Advanced</option>
+                <option value="returning">Returning After Long Break</option>
+              </select>
+            </div>
+          </div>
+
+          <h2>4. Lifestyle & Schedule</h2>
+          <div class="grid-3">
+            <div>
+              <label for="activity">Current Lifestyle</label>
+              <select id="activity">
+                <option value="">Select</option>
+                <option value="sedentary">Mostly Sitting</option>
+                <option value="light">Lightly Active</option>
+                <option value="active">Active</option>
+                <option value="veryactive">Very Active</option>
+                <option value="student">Student Lifestyle</option>
+                <option value="office">Office Job</option>
+                <option value="shiftwork">Shift Work / Irregular Sleep</option>
+                <option value="parent">Busy Parent</option>
+                <option value="athlete">Athlete / Sports Lifestyle</option>
+              </select>
+            </div>
+            <div>
+              <label for="days">Workout Days Per Week</label>
+              <select id="days">
+                <option value="">Select</option>
+                <option value="1">1 Day</option>
+                <option value="2">2 Days</option>
+                <option value="3">3 Days</option>
+                <option value="4">4 Days</option>
+                <option value="5">5 Days</option>
+                <option value="6">6 Days</option>
+                <option value="7">7 Days / Daily Movement</option>
+              </select>
+            </div>
+            <div>
+              <label for="timeAvailable">Time Per Workout</label>
+              <select id="timeAvailable">
+                <option value="">Select</option>
+                <option value="15">15 Minutes</option>
+                <option value="30">30 Minutes</option>
+                <option value="45">45 Minutes</option>
+                <option value="60">60 Minutes</option>
+                <option value="90">90 Minutes</option>
+              </select>
+            </div>
+          </div>
+
+          <h2>5. Food & Equipment</h2>
+          <div class="grid">
+            <div>
+              <label for="diet">Diet Preference</label>
+              <select id="diet">
+                <option value="">Select</option>
+                <option value="normal">No Preference</option>
+                <option value="vegetarian">Vegetarian</option>
+                <option value="vegan">Vegan</option>
+                <option value="highprotein">High Protein</option>
+                <option value="lowcarb">Low Carb</option>
+                <option value="mediterranean">Mediterranean Style</option>
+                <option value="balanced">Balanced Diet</option>
+                <option value="budget">Budget-Friendly</option>
+                <option value="indian">Indian-Style Meals</option>
+                <option value="southasian">South Asian Meals</option>
+                <option value="halal">Halal-Friendly</option>
+                <option value="glutenfree">Gluten-Free</option>
+              </select>
+            </div>
+            <div>
+              <label for="equipment">Available Equipment</label>
+              <select id="equipment">
+                <option value="">Select</option>
+                <option value="none">No Equipment / Home Workout</option>
+                <option value="basic">Dumbbells / Resistance Bands</option>
+                <option value="gym">Full Gym</option>
+                <option value="barbell">Barbell / Power Rack</option>
+                <option value="cardio">Cardio Machines</option>
+                <option value="outdoor">Outdoor / Park</option>
+                <option value="pool">Swimming Pool</option>
+              </select>
+            </div>
+          </div>
+
+          <label for="cultureFood">Cultural / Favourite Food Style</label>
+          <input type="text" id="cultureFood" placeholder="Example: Indian meals, rice-based meals, halal, Tamil food, etc." />
+
+          <label for="notes">Injuries, Health Issues, or Extra Notes</label>
+          <textarea id="notes" placeholder="Example: knee pain, back pain, beginner, busy schedule, wants abs, plays soccer, etc."></textarea>
+
+          <button class="full-btn" type="submit">Sign In & Open My Dashboard</button>
+          <button class="full-btn secondary-btn" type="button" onclick="quickLogin()">Already Have Account? Open By Email</button>
+          <p class="mini-note">Tip: enter your email first, then click “Open By Email” to load your saved account.</p>
+        </form>
+      </div>
+    </section>
+
+    <section id="dashboardScreen" class="screen">
+      <div class="topbar">
+        <div>
+          <h2 id="welcomeTitle">Welcome</h2>
+          <p id="welcomeSubtitle">Your AI plan is ready.</p>
+        </div>
+        <div class="actions">
+          <button onclick="refreshDailyPlan()">Refresh Today’s Plan</button>
+          <button class="secondary-btn" onclick="goBackToSetup()">Edit Profile</button>
+          <button class="danger-btn" onclick="logout()">Log Out</button>
+        </div>
+      </div>
+
+      <div class="cards">
+        <div class="stat-card">
+          <h3>Goal</h3>
+          <div class="big" id="goalStat">-</div>
+        </div>
+        <div class="stat-card">
+          <h3>Workout Days</h3>
+          <div class="big" id="daysStat">-</div>
+        </div>
+        <div class="stat-card">
+          <h3>Progress</h3>
+          <div class="big" id="entryStat">0</div>
+        </div>
+        <div class="stat-card">
+          <h3>Streak</h3>
+          <div class="big" id="streakStat">0</div>
+        </div>
+        <div class="stat-card">
+          <h3>BMI</h3>
+          <div class="big" id="bmiStat">-</div>
+        </div>
+      </div>
+
+      <div class="dashboard-grid">
+        <div class="content-card">
+          <h3>📅 Today’s Daily Plan</h3>
+          <div id="todayTags"></div>
+          <ul id="dailyPlan"></ul>
+        </div>
+
+        <div class="content-card">
+          <h3>✅ Daily Checklist</h3>
+          <div id="dailyChecklist"></div>
+          <button class="full-btn" onclick="saveChecklist()">Save Checklist</button>
+        </div>
+      </div>
+
+      <div class="dashboard-grid">
+        <div class="content-card">
+          <h3>🗓️ Weekly Split</h3>
+          <ul id="weeklyPlan"></ul>
+        </div>
+
+        <div class="content-card">
+          <h3>📈 Progress Tracker</h3>
+          <label for="progressNote">Today’s Progress Note</label>
+          <input type="text" id="progressNote" placeholder="Example: 72 kg, completed workout, 8k steps" />
+          <button class="full-btn" onclick="saveProgress()">Save Progress</button>
+          <button class="full-btn danger-btn" onclick="resetProgress()">Reset Progress</button>
+          <p id="progressSummary"></p>
+          <div id="progressList"></div>
+        </div>
+      </div>
+
+      <div class="dashboard-grid">
+        <div class="content-card">
+          <h3>🏋️ Full Workout Strategy</h3>
+          <ul id="workoutPlan"></ul>
+        </div>
+
+        <div class="content-card">
+          <h3>🥗 Diet Strategy</h3>
+          <ul id="dietPlan"></ul>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <h3>🔥 Lifestyle & Recovery</h3>
+        <ul id="lifestylePlan"></ul>
+      </div>
+
+      <div class="warning-card">
+        <h3>⚠️ Important Safety Note</h3>
+        <p>This is a demo fitness planner, not medical advice. If you have injuries, medical conditions, pregnancy/postpartum concerns, eating disorders, or major weight-loss goals, speak with a doctor or certified trainer.</p>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const setupForm = document.getElementById("setupForm");
+    const setupScreen = document.getElementById("setupScreen");
+    const dashboardScreen = document.getElementById("dashboardScreen");
+
+    const welcomeTitle = document.getElementById("welcomeTitle");
+    const welcomeSubtitle = document.getElementById("welcomeSubtitle");
+    const goalStat = document.getElementById("goalStat");
+    const daysStat = document.getElementById("daysStat");
+    const entryStat = document.getElementById("entryStat");
+    const streakStat = document.getElementById("streakStat");
+    const bmiStat = document.getElementById("bmiStat");
+    const todayTags = document.getElementById("todayTags");
+    const dailyPlan = document.getElementById("dailyPlan");
+    const weeklyPlan = document.getElementById("weeklyPlan");
+    const workoutPlan = document.getElementById("workoutPlan");
+    const dietPlan = document.getElementById("dietPlan");
+    const lifestylePlan = document.getElementById("lifestylePlan");
+    const progressSummary = document.getElementById("progressSummary");
+    const progressList = document.getElementById("progressList");
+    const dailyChecklist = document.getElementById("dailyChecklist");
+
+    let currentUser = null;
+
+    function getValue(id) {
+      return document.getElementById(id).value.trim();
+    }
+
+    function getAccountKey(email) {
+      return "aiFitnessAccount_" + email.toLowerCase();
+    }
+
+    function labelText(selectId, value) {
+      const select = document.getElementById(selectId);
+      if (!select) return value;
+      const option = Array.from(select.options).find(opt => opt.value === value);
+      return option ? option.textContent : value;
+    }
+
+    function addListItems(element, items) {
+      element.innerHTML = "";
+      items.forEach(item => {
+        const li = document.createElement("li");
+        li.textContent = item;
+        element.appendChild(li);
+      });
+    }
+
+    function readProfile() {
+      return {
+        email: getValue("email"),
+        name: getValue("name"),
+        age: getValue("age"),
+        height: getValue("height"),
+        weight: getValue("weight"),
+        gender: getValue("gender"),
+        bodyType: getValue("bodyType"),
+        goal: getValue("goal"),
+        experience: getValue("experience"),
+        activity: getValue("activity"),
+        days: getValue("days"),
+        timeAvailable: getValue("timeAvailable"),
+        diet: getValue("diet"),
+        equipment: getValue("equipment"),
+        cultureFood: getValue("cultureFood"),
+        notes: getValue("notes")
+      };
+    }
+
+    function validateProfile(profile) {
+      if (!profile.email || !profile.name) {
+        alert("Please enter at least your email and name to sign in.");
+        return false;
+      }
+
+      // Safe defaults so the dashboard still opens even if the user skips dropdowns.
+      if (!profile.age) profile.age = "18";
+      if (!profile.gender) profile.gender = "other";
+      if (!profile.bodyType) profile.bodyType = "average";
+      if (!profile.goal) profile.goal = "general";
+      if (!profile.experience) profile.experience = "beginner";
+      if (!profile.activity) profile.activity = "light";
+      if (!profile.days) profile.days = "3";
+      if (!profile.timeAvailable) profile.timeAvailable = "30";
+      if (!profile.diet) profile.diet = "balanced";
+      if (!profile.equipment) profile.equipment = "none";
+
+      return true;
+    }
+
+    setupForm.addEventListener("submit", function(event) {
+      event.preventDefault();
+
+      const profile = readProfile();
+      if (!validateProfile(profile)) return;
+
+      const key = getAccountKey(profile.email);
+      const oldAccount = JSON.parse(localStorage.getItem(key)) || {
+        progress: [],
+        checklists: {},
+        createdAt: new Date().toLocaleDateString()
+      };
+
+      currentUser = {
+        profile: profile,
+        progress: oldAccount.progress || [],
+        checklists: oldAccount.checklists || {},
+        createdAt: oldAccount.createdAt || new Date().toLocaleDateString()
+      };
+
+      localStorage.setItem(key, JSON.stringify(currentUser));
+      openDashboard();
+    });
+
+    function quickLogin() {
+      const email = getValue("email");
+      if (!email) {
+        alert("Enter your email first.");
+        return;
+      }
+
+      const saved = JSON.parse(localStorage.getItem(getAccountKey(email)));
+      if (!saved) {
+        alert("No saved account found for this email. Please complete the form first.");
+        return;
+      }
+
+      currentUser = saved;
+      openDashboard();
+    }
+
+    function openDashboard() {
+      const profile = currentUser.profile;
+      const fullPlan = buildFullPlan(profile);
+      const todayPlan = buildDailyPlan(profile);
+      const weekPlan = buildWeeklySplit(profile);
+
+      setupScreen.classList.remove("active");
+      dashboardScreen.classList.add("active");
+
+      welcomeTitle.textContent = "Welcome, " + profile.name;
+      welcomeSubtitle.textContent = "Signed in as " + profile.email + " • " + labelText("goal", profile.goal);
+      goalStat.textContent = labelText("goal", profile.goal);
+      daysStat.textContent = profile.days + " / week";
+      entryStat.textContent = currentUser.progress.length;
+      streakStat.textContent = calculateStreak(currentUser.progress) + " days";
+      bmiStat.textContent = calculateBMI(profile.height, profile.weight);
+
+      todayTags.innerHTML = "";
+      addTag(labelText("bodyType", profile.bodyType));
+      addTag(labelText("experience", profile.experience));
+      addTag(labelText("equipment", profile.equipment));
+      addTag(profile.timeAvailable + " min");
+
+      addListItems(dailyPlan, todayPlan);
+      addListItems(weeklyPlan, weekPlan);
+      addListItems(workoutPlan, fullPlan.workouts);
+      addListItems(dietPlan, fullPlan.diets);
+      addListItems(lifestylePlan, fullPlan.lifestyle);
+      renderProgress();
+      renderChecklist();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function addTag(text) {
+      const span = document.createElement("span");
+      span.className = "tag";
+      span.textContent = text;
+      todayTags.appendChild(span);
+    }
+
+    function buildDailyPlan(profile) {
+      const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+      const today = dayNames[new Date().getDay()];
+      let plan = [];
+
+      plan.push("Today is " + today + ". Time target: around " + profile.timeAvailable + " minutes.");
+
+      if (profile.goal === "fatloss") {
+        plan.push("Warm-up: 5 minutes walking or light jogging.");
+        plan.push("Workout: 3 rounds of squats, push-ups, rows, lunges, and planks.");
+        plan.push("Cardio: 20 minutes brisk walking, cycling, or stairs.");
+        plan.push("Nutrition focus: protein in every meal and avoid sugary snacks today.");
+      } else if (profile.goal === "muscle" || profile.goal === "bodybuilding") {
+        plan.push("Warm-up: 5–8 minutes light cardio and shoulder/hip mobility.");
+        plan.push("Workout: upper body push and pull — press, row, shoulder press, curls, and triceps.");
+        plan.push("Sets: 3–4 sets of 8–12 reps. Stop 1–2 reps before failure.");
+        plan.push("Nutrition focus: eat a protein-rich meal within a few hours after training.");
+      } else if (profile.goal === "strength" || profile.goal === "powerlifting") {
+        plan.push("Warm-up: mobility plus lighter sets of your main lift.");
+        plan.push("Workout: squat or deadlift focus, then rows, core, and hamstring work.");
+        plan.push("Sets: 3–5 heavy sets with 2–3 minutes rest.");
+        plan.push("Nutrition focus: carbs before training and protein after training.");
+      } else if (profile.goal === "endurance") {
+        plan.push("Workout: 30–45 minutes cardio at a steady pace.");
+        plan.push("Add: 10 minutes core and stretching.");
+        plan.push("Nutrition focus: hydration, fruit, healthy carbs, and protein.");
+      } else if (profile.goal === "calisthenics") {
+        plan.push("Skill practice: push-up, pull-up/row, dip, plank, and hollow hold progressions.");
+        plan.push("Strength: 3 sets each of squats, push-ups, rows, lunges, and core.");
+        plan.push("Nutrition focus: balanced meals to keep strength high.");
+      } else if (profile.goal === "flexibility" || profile.goal === "rehab") {
+        plan.push("Workout: low-impact movement only.");
+        plan.push("Mobility: hips, shoulders, spine, ankles, hamstrings, and breathing drills.");
+        plan.push("Strength: light controlled reps. Avoid painful movements.");
+        plan.push("Nutrition focus: protein, water, fruits, vegetables, and steady meals.");
+      } else if (profile.goal === "combat" || profile.goal === "sports" || profile.goal === "athletic") {
+        plan.push("Warm-up: jump rope or light jog for 5 minutes.");
+        plan.push("Workout: agility drills, sprints, core, push-ups, squats, and explosive movements.");
+        plan.push("Skill: add 10–15 minutes of sport-specific practice.");
+        plan.push("Nutrition focus: carbs before training, protein after training, and hydration.");
+      } else if (profile.goal === "hiit") {
+        plan.push("Workout: 6–10 rounds of 30 seconds hard effort and 60 seconds rest.");
+        plan.push("Exercises: mountain climbers, squats, push-ups, burpees, and fast walking.");
+        plan.push("Nutrition focus: protein after workout and water throughout the day.");
+      } else {
+        plan.push("Workout: full-body training — squats, push-ups, rows, lunges, shoulder work, and core.");
+        plan.push("Cardio: 10–20 minutes easy walking or cycling.");
+        plan.push("Nutrition focus: protein, vegetables, fruit, healthy carbs, and water.");
+      }
+
+      if (profile.equipment === "none") {
+        plan.push("Equipment version: bodyweight only — use push-ups, squats, lunges, planks, step-ups, and glute bridges.");
+      } else if (profile.equipment === "basic") {
+        plan.push("Equipment version: use dumbbells or bands for rows, presses, curls, squats, and Romanian deadlifts.");
+      } else if (profile.equipment === "gym") {
+        plan.push("Equipment version: use gym machines and free weights, but keep your form clean.");
+      } else if (profile.equipment === "barbell") {
+        plan.push("Equipment version: use barbell squats, deadlifts, bench press, overhead press, and rows.");
+      } else if (profile.equipment === "cardio") {
+        plan.push("Equipment version: use treadmill, bike, rower, elliptical, or stair climber.");
+      } else if (profile.equipment === "outdoor") {
+        plan.push("Equipment version: use walking, jogging, stairs, benches, sprints, and park bodyweight training.");
+      } else if (profile.equipment === "pool") {
+        plan.push("Equipment version: use swimming, pool walking, water jogging, and low-impact conditioning.");
+      }
+
+      if (profile.notes) {
+        plan.push("Personal note: " + profile.notes + " — adjust intensity and avoid anything painful.");
+      }
+
+      return plan;
+    }
+
+    function buildWeeklySplit(profile) {
+      const days = Number(profile.days);
+
+      if (days === 1) {
+        return ["Day 1: Full-body strength + light cardio", "Other days: walking, stretching, and recovery"];
+      }
+      if (days === 2) {
+        return ["Day 1: Full-body strength", "Day 2: Cardio + core", "Other days: walking and mobility"];
+      }
+      if (days === 3) {
+        return ["Day 1: Full-body strength", "Day 2: Cardio + mobility", "Day 3: Full-body strength", "Other days: walking and recovery"];
+      }
+      if (days === 4) {
+        return ["Day 1: Upper body", "Day 2: Lower body", "Day 3: Cardio + core", "Day 4: Full-body or goal-specific training"];
+      }
+      if (days === 5) {
+        return ["Day 1: Push", "Day 2: Pull", "Day 3: Legs", "Day 4: Cardio + core", "Day 5: Full-body or weak-point training"];
+      }
+      if (days === 6) {
+        return ["Day 1: Push", "Day 2: Pull", "Day 3: Legs", "Day 4: Push", "Day 5: Pull", "Day 6: Legs or conditioning", "Day 7: Rest"];
+      }
+      return ["Daily movement plan", "3 days strength", "2 days cardio", "1 day mobility", "1 day active recovery"];
+    }
+
+    function buildFullPlan(profile) {
+      const workouts = [];
+      const diets = [];
+      const lifestyle = [];
+
+      const goalWorkoutMap = {
+        fatloss: ["Prioritize strength training so you lose fat without losing too much muscle.", "Use cardio as a helper, not the only method.", "Track steps, food habits, sleep, and waist/weight trends."],
+        muscle: ["Train muscles at least twice per week.", "Use progressive overload by increasing reps, sets, or weight slowly.", "Focus on compound lifts first, then isolation exercises."],
+        strength: ["Use heavier weights with lower reps for main lifts.", "Rest longer between heavy sets.", "Track squat, deadlift, bench/press, rows, and core strength."],
+        endurance: ["Build cardio volume slowly.", "Use easy steady sessions plus one harder interval day.", "Add light strength to protect joints."],
+        general: ["Balance strength, cardio, mobility, and recovery.", "Consistency matters more than perfect workouts.", "Start simple and increase difficulty gradually."],
+        athletic: ["Train speed, agility, power, strength, and conditioning.", "Use sprints, jumps, carries, core work, and sport drills.", "Recovery is important because athletic plans can become intense."],
+        flexibility: ["Use daily mobility and stretching.", "Train strength through full range of motion.", "Focus on hips, hamstrings, shoulders, spine, and ankles."],
+        bodybuilding: ["Use push/pull/legs or upper/lower split.", "Use 8–15 reps for many exercises.", "Track body measurements, photos, and training volume."],
+        powerlifting: ["Focus on squat, bench press, and deadlift.", "Use accessory work to fix weak points.", "Keep technique strict and avoid maxing out too often."],
+        calisthenics: ["Train bodyweight skills first, then strength.", "Use progressions for push-ups, pull-ups, dips, squats, core, and handstands.", "Control body weight and build relative strength."],
+        hiit: ["Use short hard intervals with enough rest.", "Limit HIIT to 2–4 days weekly.", "Mix conditioning with strength and recovery."],
+        rehab: ["Keep workouts low-impact and controlled.", "Avoid painful ranges and aggressive loading.", "Build confidence, mobility, and basic strength first."],
+        combat: ["Train footwork, conditioning, core, explosiveness, and endurance.", "Use jump rope, shadowboxing, bag work, push-ups, squats, and sprints.", "Balance hard sessions with recovery."],
+        sports: ["Train for your sport, not just the gym.", "Use agility, acceleration, single-leg strength, core stability, and injury prevention.", "Practice sport skills regularly."]
+      };
+
+      workouts.push(...(goalWorkoutMap[profile.goal] || goalWorkoutMap.general));
+
+      if (["ectomorph", "lean", "talllean", "underweight"].includes(profile.bodyType)) {
+        workouts.push("Body type advice: focus on strength training and avoid excessive cardio if your goal is to gain size.");
+        diets.push("Eat enough calories. Add calorie-dense foods like rice, oats, nuts, yogurt, eggs, paneer, tofu, lean meats, and smoothies.");
+      } else if (["endomorph", "overweight", "obese"].includes(profile.bodyType)) {
+        workouts.push("Body type advice: use joint-friendly cardio plus strength training.");
+        diets.push("Use a small calorie deficit, high protein, high-fibre foods, and avoid crash diets.");
+      } else if (profile.bodyType === "skinnyfat") {
+        workouts.push("Body type advice: focus on recomposition — strength training, protein, and consistency.");
+        diets.push("Avoid extreme bulking or extreme dieting. Use balanced meals and high protein.");
+      } else if (profile.bodyType === "postpartum") {
+        workouts.push("Postpartum advice: start gentle and get medical clearance before intense training.");
+        diets.push("Focus on recovery, hydration, protein, and steady meals.");
+      } else if (profile.bodyType === "senior") {
+        workouts.push("Senior advice: include balance, light strength, walking, mobility, and safe resistance training.");
+        diets.push("Prioritize protein, calcium-rich foods, hydration, and regular meals.");
+      } else if (profile.bodyType === "teen") {
+        workouts.push("Teen advice: focus on form, sports, bodyweight strength, and supervised lifting.");
+        diets.push("Avoid extreme dieting because your body is still growing.");
+      } else {
+        workouts.push("Body type advice: use a balanced program with strength, cardio, and mobility.");
+        diets.push("Use balanced meals with protein, vegetables, carbs, and healthy fats.");
+      }
+
+      if (profile.experience === "beginner") {
+        workouts.push("Experience advice: start with simple movements and master form before increasing intensity.");
+      } else if (profile.experience === "intermediate") {
+        workouts.push("Experience advice: track your sets, reps, and progress weekly.");
+      } else if (profile.experience === "advanced") {
+        workouts.push("Experience advice: use planned deloads, periodization, and targeted weak-point training.");
+      } else if (profile.experience === "returning") {
+        workouts.push("Experience advice: treat the first 2–4 weeks as a comeback phase, not a max-effort phase.");
+      }
+
+      if (profile.diet === "vegetarian") {
+        diets.push("Vegetarian protein: lentils, beans, tofu, paneer, Greek yogurt, eggs if allowed, soy, and protein shakes.");
+      } else if (profile.diet === "vegan") {
+        diets.push("Vegan protein: tofu, tempeh, lentils, chickpeas, beans, soy milk, nuts, seeds, and vegan protein powder.");
+      } else if (profile.diet === "highprotein") {
+        diets.push("High-protein options: chicken, fish, eggs, Greek yogurt, tofu, paneer, beans, lentils, and protein shakes.");
+      } else if (profile.diet === "lowcarb") {
+        diets.push("Low-carb style: protein, vegetables, healthy fats, and controlled carbs around workouts.");
+      } else if (profile.diet === "indian" || profile.diet === "southasian") {
+        diets.push("South Asian style: dal, chana, rajma, curd, eggs, paneer, tofu, grilled chicken/fish, vegetables, roti, and controlled rice portions.");
+        diets.push("Reduce fried snacks, sweets, sugary chai, and oversized rice portions if fat loss is your goal.");
+      } else if (profile.diet === "budget") {
+        diets.push("Budget foods: eggs, oats, rice, beans, lentils, frozen vegetables, potatoes, tuna, tofu, yogurt, and bananas.");
+      } else if (profile.diet === "halal") {
+        diets.push("Halal-friendly protein: halal chicken/meat, fish, eggs, lentils, beans, Greek yogurt, tofu, and nuts.");
+      } else if (profile.diet === "glutenfree") {
+        diets.push("Gluten-free options: rice, potatoes, quinoa, corn, fruits, vegetables, meats, eggs, beans, lentils, and certified gluten-free foods.");
+      } else if (profile.diet === "mediterranean") {
+        diets.push("Mediterranean style: fish, chicken, legumes, olive oil, vegetables, fruits, yogurt, and whole grains.");
+      } else {
+        diets.push("Use the plate method: 1/2 vegetables, 1/4 protein, 1/4 carbs, plus healthy fats.");
+      }
+
+      if (profile.cultureFood) {
+        diets.push("Food preference: keep enjoying " + profile.cultureFood + ", but build healthier portions and higher-protein versions.");
+      }
+
+      lifestyle.push("Sleep 7–9 hours when possible because sleep affects hunger, recovery, and motivation.");
+      lifestyle.push("Drink water daily, especially before and after workouts.");
+      lifestyle.push("Track more than weight: strength, steps, energy, photos, clothes fit, and consistency.");
+      lifestyle.push("Warm up before training and cool down after training.");
+
+      if (profile.activity === "sedentary" || profile.activity === "office") {
+        lifestyle.push("Lifestyle advice: start with 6,000–8,000 steps per day and short walking breaks.");
+      } else if (profile.activity === "shiftwork") {
+        lifestyle.push("Lifestyle advice: protect sleep and keep meals simple because shift work makes recovery harder.");
+      } else if (profile.activity === "parent") {
+        lifestyle.push("Lifestyle advice: short 20–30 minute workouts can still work if done consistently.");
+      } else if (profile.activity === "athlete" || profile.activity === "veryactive") {
+        lifestyle.push("Lifestyle advice: recovery, hydration, and enough food matter more because you are already active.");
+      }
+
+      if (profile.notes) {
+        lifestyle.push("Your note: " + profile.notes + ". Adjust your exercises around this and avoid painful movement.");
+      }
+
+      return { workouts, diets, lifestyle };
+    }
+
+    function renderChecklist() {
+      dailyChecklist.innerHTML = "";
+      const todayKey = new Date().toLocaleDateString();
+      const savedChecklist = currentUser.checklists && currentUser.checklists[todayKey] ? currentUser.checklists[todayKey] : {};
+
+      const checklistItems = [
+        "Completed today’s workout or active recovery",
+        "Ate protein in at least 2 meals",
+        "Drank enough water",
+        "Walked or moved during the day",
+        "Slept or planned sleep properly"
+      ];
+
+      checklistItems.forEach((item, index) => {
+        const wrapper = document.createElement("label");
+        wrapper.className = "checklist-item";
+
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.id = "check_" + index;
+        checkbox.checked = savedChecklist[item] || false;
+
+        const text = document.createElement("span");
+        text.textContent = item;
+
+        wrapper.appendChild(checkbox);
+        wrapper.appendChild(text);
+        dailyChecklist.appendChild(wrapper);
+      });
+    }
+
+    function saveChecklist() {
+      if (!currentUser) return;
+
+      const todayKey = new Date().toLocaleDateString();
+      const checklistData = {};
+      const labels = dailyChecklist.querySelectorAll("label");
+
+      labels.forEach(label => {
+        const checkbox = label.querySelector("input");
+        const text = label.querySelector("span").textContent;
+        checklistData[text] = checkbox.checked;
+      });
+
+      if (!currentUser.checklists) currentUser.checklists = {};
+      currentUser.checklists[todayKey] = checklistData;
+      localStorage.setItem(getAccountKey(currentUser.profile.email), JSON.stringify(currentUser));
+      alert("Checklist saved for today.");
+    }
+
+    function saveProgress() {
+      if (!currentUser) {
+        alert("Please sign in first.");
+        return;
+      }
+
+      const noteInput = document.getElementById("progressNote");
+      const note = noteInput.value.trim();
+
+      if (!note) {
+        alert("Please enter a progress note first.");
+        return;
+      }
+
+      currentUser.progress.push({
+        date: new Date().toLocaleDateString(),
+        time: new Date().toLocaleTimeString(),
+        note: note
+      });
+
+      localStorage.setItem(getAccountKey(currentUser.profile.email), JSON.stringify(currentUser));
+      noteInput.value = "";
+      renderProgress();
+      entryStat.textContent = currentUser.progress.length;
+      streakStat.textContent = calculateStreak(currentUser.progress) + " days";
+    }
+
+    function renderProgress() {
+      progressList.innerHTML = "";
+      progressSummary.textContent = "Total progress entries: " + currentUser.progress.length;
+
+      if (currentUser.progress.length === 0) {
+        progressList.innerHTML = "<p>No progress saved yet. Add your first update today.</p>";
+        return;
+      }
+
+      currentUser.progress.slice(-7).reverse().forEach(entry => {
+        const div = document.createElement("div");
+        div.className = "progress-entry";
+        div.innerHTML = "<strong>" + entry.date + " at " + entry.time + "</strong><br>" + entry.note;
+        progressList.appendChild(div);
+      });
+    }
+
+    function resetProgress() {
+      if (!currentUser) return;
+      const confirmReset = confirm("Are you sure you want to delete all progress entries?");
+      if (!confirmReset) return;
+
+      currentUser.progress = [];
+      localStorage.setItem(getAccountKey(currentUser.profile.email), JSON.stringify(currentUser));
+      renderProgress();
+      entryStat.textContent = "0";
+      streakStat.textContent = "0 days";
+    }
+
+    function calculateStreak(progress) {
+      if (!progress || progress.length === 0) return 0;
+
+      const uniqueDates = [...new Set(progress.map(entry => entry.date))];
+      let streak = 0;
+      const current = new Date();
+
+      for (let i = 0; i < 30; i++) {
+        const checkDate = current.toLocaleDateString();
+        if (uniqueDates.includes(checkDate)) {
+          streak++;
+          current.setDate(current.getDate() - 1);
+        } else {
+          break;
+        }
+      }
+
+      return streak;
+    }
+
+    function calculateBMI(heightText, weightText) {
+      const heightNumber = parseFloat(heightText);
+      const weightNumber = parseFloat(weightText);
+
+      if (!heightNumber || !weightNumber) return "-";
+
+      let heightMeters = heightNumber;
+      if (heightNumber > 3) heightMeters = heightNumber / 100;
+
+      let weightKg = weightNumber;
+      if (weightText.toLowerCase().includes("lb")) weightKg = weightNumber * 0.453592;
+
+      if (heightMeters <= 0) return "-";
+
+      const bmi = weightKg / (heightMeters * heightMeters);
+      if (!isFinite(bmi)) return "-";
+      return bmi.toFixed(1);
+    }
+
+    function refreshDailyPlan() {
+      if (!currentUser) return;
+      addListItems(dailyPlan, buildDailyPlan(currentUser.profile));
+      alert("Today's plan has been refreshed.");
+    }
+
+    function goBackToSetup() {
+      if (currentUser) {
+        const p = currentUser.profile;
+        document.getElementById("email").value = p.email || "";
+        document.getElementById("name").value = p.name || "";
+        document.getElementById("age").value = p.age || "";
+        document.getElementById("height").value = p.height || "";
+        document.getElementById("weight").value = p.weight || "";
+        document.getElementById("gender").value = p.gender || "";
+        document.getElementById("bodyType").value = p.bodyType || "";
+        document.getElementById("goal").value = p.goal || "";
+        document.getElementById("experience").value = p.experience || "";
+        document.getElementById("activity").value = p.activity || "";
+        document.getElementById("days").value = p.days || "";
+        document.getElementById("timeAvailable").value = p.timeAvailable || "";
+        document.getElementById("diet").value = p.diet || "";
+        document.getElementById("equipment").value = p.equipment || "";
+        document.getElementById("cultureFood").value = p.cultureFood || "";
+        document.getElementById("notes").value = p.notes || "";
+      }
+
+      dashboardScreen.classList.remove("active");
+      setupScreen.classList.add("active");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function logout() {
+      currentUser = null;
+      dashboardScreen.classList.remove("active");
+      setupScreen.classList.add("active");
+      setupForm.reset();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  </script>
 </body>
 </html>
